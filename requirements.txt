@@ -1,0 +1,10 @@
+duckdb
+geojson
+h3
+humanize
+pyecharts
+rich
+shapely
+shpyx
+tabulate
+typer
