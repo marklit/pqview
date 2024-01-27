@@ -171,7 +171,7 @@ def types(pq_file:str, html:bool=False):
         render_sunburst(stats2,
                     parent_key='type',
                     child_key='col_name',
-                    group_under=0)
+                    group_under=0) # WIP: Increase this to 10 MB by default
 
     else:
         sizes = \
@@ -319,8 +319,18 @@ def ratios_by_column(pq_file:str):
             title_opts=opts.TitleOpts(title="Compression Ratio HeatMap"),
             visualmap_opts=opts.VisualMapOpts(),
         )
+        .set_dark_mode()
         .render("heatmap_with_label_show.html")
     )
+    '''
+    WIP:
+    * No label at the top
+    * No slider in bottom left
+    * sort y axis
+    * make y axis wider to support long labels
+    * Use nice colour gradient from QGIS maps
+    * Make taller, not all fields can be seen (where is geometry?)
+    '''
 
 
 if __name__ == "__main__":
