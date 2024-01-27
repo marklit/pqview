@@ -160,7 +160,7 @@ ZSTD
 ### Per-Column Space Usage
 
 ```bash
-$ python3 ~/Desktop/pqview/main.py sizes tokyo.pq
+$ python3 ~/pqview/main.py sizes tokyo.pq
 ```
 
 ```
@@ -202,7 +202,7 @@ $ python3 ~/Desktop/pqview/main.py sizes tokyo.pq
 ### Per-Type Space Usage
 
 ```bash
-$ python3 ~/Desktop/pqview/main.py types tokyo.pq | head
+$ python3 ~/pqview/main.py types tokyo.pq | head
 ```
 
 ```
@@ -215,7 +215,7 @@ $ python3 ~/Desktop/pqview/main.py types tokyo.pq | head
 As HTML:
 
 ```bash
-$ python3 ~/Desktop/pqview/main.py types --html tokyo.pq
+$ python3 ~/pqview/main.py types --html tokyo.pq
 ```
 
 ![Sunburst By Type](sunburst_by_type.png)
@@ -290,7 +290,7 @@ $ python3 ~/pqview/main.py ratios \
 ### Compression Ratio HeatMap
 
 ```bash
-$ python3 ~/Desktop/pqview/main.py ratios-by-column tokyo.pq
+$ python3 ~/pqview/main.py ratios-by-column tokyo.pq
 ```
 
 ![Compression Ratio HeatMap](compression_ratio_heatmap.png)
