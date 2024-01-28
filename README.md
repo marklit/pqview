@@ -1,6 +1,6 @@
 # pqview
 
-This package reports statistics on the make-up of Parquet files.
+This package reports statistics on the make-up of Parquet files. These reports are meant to be human-friendly rather than machine-readable.
 
 ## Commands Available
 
@@ -278,7 +278,7 @@ $ python3 ~/pqview/main.py \
     ratios \
     --reverse \
     --sort-key=num_rg \
-    tokyo.pq
+    ookla.pq
 ```
 
 ```
