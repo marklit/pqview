@@ -81,12 +81,16 @@ $ python3 -m pip install -r ~/pqview/requirements.txt
 
 ## Example Usage
 
-The following will download an example Parquet file.
+The following will download a few example Parquet files.
 
 ```bash
 $ aws s3 cp --no-sign-request \
     s3://overturemaps-us-west-2/release/2024-01-17-alpha.0/theme\=buildings/type\=building/part-00046-cf0ca35a-8871-4c98-bfb8-13026efbae55-c000.zstd.parquet \
     ./tokyo.pq
+
+$ aws s3 cp --no-sign-request \
+    s3://ookla-open-data/parquet/performance/type=mobile/year=2022/quarter=1/2022-01-01_performance_mobile_tiles.parquet \
+    ./ookla.oq
 ```
 
 ### Overall Statistics

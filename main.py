@@ -302,6 +302,9 @@ def ratios_by_column(pq_file:str):
 
     cols = [col.path for col in pf.schema]
 
+    # WIP: build method that has function passed into it that will be called
+    # with column. That way you can use most of this code to produce a heatmap
+    # of unique values
     values = [[rg,
               cols[col],
               pf.metadata.row_group(rg).column(col).total_compressed_size /
