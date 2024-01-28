@@ -21,17 +21,13 @@ app = typer.Typer(rich_markup_mode='rich')
 def render_table(out:dict):
     keys = out[0].keys()
 
-    out2 = []
-
-    for x in out:
-        out2.append([None if k not in x.keys() else x[k] for k in keys])
-
-    print(tabulate(out2,
+    print(tabulate([[None if k not in x.keys() else x[k]
+                     for k in keys]
+                    for x in out],
                    headers=keys,
                    tablefmt='orgtbl',
                    floatfmt='.3f',
-                   #intfmt=',',
-                   ))
+                   intfmt=','))
 
 
 @app.command()
@@ -245,11 +241,11 @@ def ratios(pq_file:str, sort_key:str='ratio', reverse:bool=False):
         for col in range(0, pf.metadata.num_columns):
             x = pf.metadata.row_group(rg).column(col)
             ratio = x.total_compressed_size / x.total_uncompressed_size
-            ratios.append('%.1f' % ratio)
+            ratios.append(r'%.1f' % ratio)
 
     sort_id = 0 if sort_key == 'ratio' else 1
 
-    render_table([{'ratio': ratio, 'num_rg': num_rg}
+    render_table([{'ratio': '%.1f:1' % (1 / float(ratio)), 'num_rg': num_rg}
                   for ratio, num_rg in sorted(Counter(ratios).items(),
                                               key=itemgetter(sort_id),
                                               reverse=reverse)])
