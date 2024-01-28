@@ -4,6 +4,8 @@ from collections import Counter
 from functools   import reduce
 from glob        import glob
 from operator    import add, itemgetter
+from os          import unlink
+from tempfile    import NamedTemporaryFile
 
 import humanize
 import pyarrow.parquet as pq
@@ -123,6 +125,8 @@ def render_sunburst(source:list,
                     for country_name in inventories[continent_name].keys()])
             for continent_name in inventories.keys()]
 
+    temp_ = NamedTemporaryFile(suffix='.html')
+
     Sunburst(init_opts=opts.InitOpts(width='1000px',
                                      height='1000px'))\
     .add(series_name='',
@@ -132,7 +136,11 @@ def render_sunburst(source:list,
     .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}",
                                                font_size=24))\
     .set_dark_mode()\
-    .render('sunburst.html')
+    .render(temp_.name)
+
+    html = open(temp_.name, 'r').read()
+    unlink(temp_.name)
+    return html
 
 
 @app.command()
@@ -168,11 +176,12 @@ def types(pq_file:str, html:bool=False):
                                'col_name': col_name,
                                'value': stats[type_][col_name]})
 
-        render_sunburst(stats2,
-                    parent_key='type',
-                    child_key='col_name',
-                    group_under=0) # WIP: Increase this to 10 MB by default
-
+        html = render_sunburst(stats2,
+                               parent_key='type',
+                               child_key='col_name',
+                               # WIP: Increase this to 10 MB by default
+                               group_under=0)
+        print(html)
     else:
         sizes = \
             reduce(add,
@@ -306,7 +315,9 @@ def ratios_by_column(pq_file:str):
     values = [[rg, col, 100 - (100 * ((val - min_val)/(max_val - min_val)))]
               for rg, col, val in values]
 
-    c = (
+    temp_ = NamedTemporaryFile(suffix='.html')
+
+    _ = (
         HeatMap()
         .add_xaxis([rg for rg in range(0, pf.metadata.num_row_groups)])
         .add_yaxis(
@@ -320,8 +331,11 @@ def ratios_by_column(pq_file:str):
             visualmap_opts=opts.VisualMapOpts(),
         )
         .set_dark_mode()
-        .render("heatmap_with_label_show.html")
+        .render(temp_.name)
     )
+
+    print(open(temp_.name, 'r').read())
+    unlink(temp_.name)
     '''
     WIP:
     * No label at the top

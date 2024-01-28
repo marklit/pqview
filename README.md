@@ -5,7 +5,8 @@ This package reports statistics on the make-up of Parquet files.
 ## Commands Available
 
 ```bash
-$ python3 ~/pqview/main.py --help
+$ python3 ~/pqview/main.py \
+    --help
 ```
 
 ```
@@ -91,7 +92,8 @@ $ aws s3 cp --no-sign-request \
 ### Overall Statistics
 
 ```bash
-$ python3 ~/pqview/main.py overall tokyo.pq
+$ python3 ~/pqview/main.py \
+    overall tokyo.pq
 ```
 
 ```
@@ -150,7 +152,8 @@ $ python3 ~/pqview/main.py \
 ### List Every Compression Scheme Used
 
 ```bash
-python3 ~/pqview/main.py schemes tokyo.pq
+$ python3 ~/pqview/main.py \
+    schemes tokyo.pq
 ```
 
 ```
@@ -160,7 +163,8 @@ ZSTD
 ### Per-Column Space Usage
 
 ```bash
-$ python3 ~/pqview/main.py sizes tokyo.pq
+$ python3 ~/pqview/main.py \
+    sizes tokyo.pq
 ```
 
 ```
@@ -202,7 +206,9 @@ $ python3 ~/pqview/main.py sizes tokyo.pq
 ### Per-Type Space Usage
 
 ```bash
-$ python3 ~/pqview/main.py types tokyo.pq | head
+$ python3 ~/pqview/main.py \
+    types tokyo.pq \
+    | head
 ```
 
 ```
@@ -215,7 +221,9 @@ $ python3 ~/pqview/main.py types tokyo.pq | head
 As HTML:
 
 ```bash
-$ python3 ~/pqview/main.py types --html tokyo.pq
+$ python3 ~/pqview/main.py \
+    types --html tokyo.pq \
+    > sunburst_by_type.html
 ```
 
 ![Sunburst By Type](sunburst_by_type.png)
@@ -262,7 +270,8 @@ From 503.5 kB to 74.8 kB (ratio of 6:1)
 ### Row Group Counts for each compression ratio
 
 ```bash
-$ python3 ~/pqview/main.py ratios \
+$ python3 ~/pqview/main.py \
+    ratios \
     --reverse \
     --sort-key=num_rg \
     tokyo.pq
@@ -290,7 +299,9 @@ $ python3 ~/pqview/main.py ratios \
 ### Compression Ratio HeatMap
 
 ```bash
-$ python3 ~/pqview/main.py ratios-by-column tokyo.pq
+$ python3 ~/pqview/main.py \
+    ratios-by-column tokyo.pq \
+    > compression_ratio_heatmap.html
 ```
 
 ![Compression Ratio HeatMap](compression_ratio_heatmap.png)
@@ -302,7 +313,9 @@ The blue values were compressed the most while the red areas were compressed the
 This indicates how well sorted a column is.
 
 ```bash
-$ python3 ~/pqview/main.py minmax tokyo.pq bbox.minx | head
+$ python3 ~/pqview/main.py \
+    minmax tokyo.pq bbox.minx \
+    | head
 ```
 
 ```
