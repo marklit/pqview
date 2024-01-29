@@ -90,7 +90,7 @@ $ aws s3 cp --no-sign-request \
 
 $ aws s3 cp --no-sign-request \
     s3://ookla-open-data/parquet/performance/type=mobile/year=2022/quarter=1/2022-01-01_performance_mobile_tiles.parquet \
-    ./ookla.oq
+    ./ookla.pq
 ```
 
 ### Overall Statistics
