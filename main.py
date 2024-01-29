@@ -121,7 +121,7 @@ def render_sunburst(source:list,
                     for country_name in inventories[continent_name].keys()])
             for continent_name in inventories.keys()]
 
-    temp_ = NamedTemporaryFile(suffix='.html')
+    temp_ = NamedTemporaryFile(suffix='.html', delete=False)
 
     Sunburst(init_opts=opts.InitOpts(width='1000px',
                                      height='1000px'))\
@@ -314,20 +314,23 @@ def ratios_by_column(pq_file:str):
     values = [[rg, col, 100 - (100 * ((val - min_val)/(max_val - min_val)))]
               for rg, col, val in values]
 
-    temp_ = NamedTemporaryFile(suffix='.html')
+    temp_ = NamedTemporaryFile(suffix='.html', delete=False)
+
+    from pyecharts.globals import ThemeType
 
     _ = (
-        HeatMap()
+        HeatMap(init_opts=opts.InitOpts(theme=ThemeType.DARK))
         .add_xaxis([rg for rg in range(0, pf.metadata.num_row_groups)])
         .add_yaxis(
-            "compression ratio",
+            "Compression Ratio Ranking (100 best, 0 worst)",
             cols,
             values,
-            label_opts=opts.LabelOpts(is_show=False, position="inside"),
+            label_opts=opts.LabelOpts(is_show=False, padding=100),
         )
         .set_global_opts(
+            legend_opts=opts.LegendOpts(is_show=False),
             title_opts=opts.TitleOpts(title="Compression Ratio HeatMap"),
-            visualmap_opts=opts.VisualMapOpts(),
+            visualmap_opts=opts.VisualMapOpts(pos_right='0%', pos_top='0%'),
         )
         .set_dark_mode()
         .render(temp_.name)
