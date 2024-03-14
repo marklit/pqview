@@ -2,6 +2,7 @@ duckdb
 geojson
 h3
 humanize
+pyarrow
 pyecharts
 rich
 shapely
