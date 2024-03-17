@@ -170,7 +170,7 @@ def types(pq_file:str, html:bool=False):
 
         stats2 = []
 
-        for type_ in stats.keys():
+        for type_ in stats.keys(): # pylint: disable=C0206
             for col_name in stats[type_]:
                 stats2.append({'type': type_,
                                'col_name': col_name,
@@ -309,8 +309,8 @@ def ratios_by_column(pq_file:str):
              for rg in range(0, pf.metadata.num_row_groups)
              for col in range(0, pf.metadata.num_columns)]
 
-    min_val = min([x for _, _, x in values])
-    max_val = max([x for _, _, x in values])
+    min_val = min([x for _, _, x in values]) # pylint: disable=R1728
+    max_val = max([x for _, _, x in values]) # pylint: disable=R1728
 
     values = [[rg, col, 100 - (100 * ((val - min_val)/(max_val - min_val)))]
               for rg, col, val in values]
@@ -319,7 +319,7 @@ def ratios_by_column(pq_file:str):
 
     _ = (
         HeatMap(init_opts=opts.InitOpts(theme=ThemeType.DARK))
-        .add_xaxis([rg for rg in range(0, pf.metadata.num_row_groups)])
+        .add_xaxis([rg for rg in range(0, pf.metadata.num_row_groups)]) # pylint: disable=R1721
         .add_yaxis(
             "Compression Ratio Ranking (100 best, 0 worst)",
             cols,
