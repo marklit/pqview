@@ -7,16 +7,16 @@
 
 from collections import Counter
 from functools   import reduce
-from glob        import glob
 from operator    import add, itemgetter
 from os          import unlink
 from tempfile    import NamedTemporaryFile
 
 import humanize
 import pyarrow.parquet as pq
-from   pyecharts        import options as opts
-from   pyecharts.charts import HeatMap, Sunburst
-from   tabulate         import tabulate
+from   pyecharts         import options as opts
+from   pyecharts.charts  import HeatMap, Sunburst
+from   pyecharts.globals import ThemeType
+from   tabulate          import tabulate
 import typer
 
 
@@ -79,7 +79,7 @@ def sizes(pq_file:str):
     '''
     pf = pq.ParquetFile(pq_file)
 
-    sizes = \
+    sizes_ = \
         reduce(add,
                (map(Counter,
                     [{pf.metadata.row_group(rg).column(col).path_in_schema:
@@ -87,11 +87,9 @@ def sizes(pq_file:str):
                      for col in range(0, pf.metadata.num_columns)
                      for rg in range(0, pf.metadata.num_row_groups)])))
 
-    sizes = {k: v for k, v in sorted(sizes.items(),
-                                     key=lambda x: x[1],
-                                     reverse=True)}
+    sizes_ = dict(sorted(sizes.items(), key=lambda x: x[1], reverse=True))
 
-    for field, num_bytes in sizes.items():
+    for field, num_bytes in sizes_.items():
         print('%10s %s' % (humanize.naturalsize(num_bytes), field))
 
 
@@ -123,8 +121,9 @@ def render_sunburst(source:list,
                         name=country_name,
                         value=inventories[continent_name]
                                          [country_name])
-                    for country_name in inventories[continent_name].keys()])
-            for continent_name in inventories.keys()]
+                    for country_name in inventories[continent_name]
+                                            .keys()]) # pylint: disable=C0206
+            for continent_name in inventories.keys()] # pylint: disable=C0206
 
     temp_ = NamedTemporaryFile(suffix='.html', delete=False)
 
@@ -184,7 +183,7 @@ def types(pq_file:str, html:bool=False):
                                group_under=0)
         print(html)
     else:
-        sizes = \
+        sizes_ = \
             reduce(add,
                    (map(Counter,
                         [{pf.metadata.row_group(rg).column(col).physical_type:
@@ -192,11 +191,9 @@ def types(pq_file:str, html:bool=False):
                          for col in range(0, pf.metadata.num_columns)
                          for rg in range(0, pf.metadata.num_row_groups)])))
 
-        sizes = {k: v for k, v in sorted(sizes.items(),
-                                         key=lambda x: x[1],
-                                         reverse=True)}
+        sizes_ = dict(sorted(sizes_.items(), key=lambda x: x[1], reverse=True))
 
-        for field, num_bytes in sizes.items():
+        for field, num_bytes in sizes_.items():
             print('%10s %s' % (humanize.naturalsize(num_bytes), field))
 
 
@@ -240,18 +237,18 @@ def ratios(pq_file:str, sort_key:str='ratio', reverse:bool=False):
     '''
     pf = pq.ParquetFile(pq_file)
 
-    ratios = []
+    ratios_ = []
 
     for rg in range(0, pf.metadata.num_row_groups):
         for col in range(0, pf.metadata.num_columns):
             x = pf.metadata.row_group(rg).column(col)
             ratio = x.total_compressed_size / x.total_uncompressed_size
-            ratios.append(r'%.1f' % ratio)
+            ratios_.append(r'%.1f' % ratio)
 
     sort_id = 0 if sort_key == 'ratio' else 1
 
     render_table([{'ratio': '%.1f:1' % (1 / float(ratio)), 'num_rg': num_rg}
-                  for ratio, num_rg in sorted(Counter(ratios).items(),
+                  for ratio, num_rg in sorted(Counter(ratios_).items(),
                                               key=itemgetter(sort_id),
                                               reverse=reverse)])
 
@@ -272,32 +269,31 @@ def minmax(pq_file:str, column:str):
          'max': pf.metadata.row_group(rg).column(col_num).statistics.max}
          for rg in range(0, pf.metadata.num_row_groups)])
 
-'''
-Chart types:
-
-* Sunburst with break up by column dots (bbox would have 4 children)
-
-    1.2 GB geometry
-  189.8 MB id
-  121.4 MB bbox.maxy
-  121.3 MB bbox.miny
-  119.7 MB bbox.maxx
-  119.6 MB bbox.minx
-   82.6 MB sources.list.element.recordId
-   10.7 MB updateTime
-    2.9 MB height
-    2.6 MB sources.list.element.confidence
-    2.1 MB names.common.list.element.value
-    1.1 MB sources.list.element.dataset
-  584.1 kB class
-
-* Sunburst of space usage by column type with children being column names
-'''
 
 @app.command()
 def ratios_by_column(pq_file:str):
     '''
     Compression ratios of each column by row-group
+
+    Chart types:
+
+    * Sunburst with break up by column dots (bbox would have 4 children)
+
+        1.2 GB geometry
+      189.8 MB id
+      121.4 MB bbox.maxy
+      121.3 MB bbox.miny
+      119.7 MB bbox.maxx
+      119.6 MB bbox.minx
+       82.6 MB sources.list.element.recordId
+       10.7 MB updateTime
+        2.9 MB height
+        2.6 MB sources.list.element.confidence
+        2.1 MB names.common.list.element.value
+        1.1 MB sources.list.element.dataset
+      584.1 kB class
+
+    * Sunburst of space usage by column type with children being column names
     '''
     pf = pq.ParquetFile(pq_file)
 
@@ -321,8 +317,6 @@ def ratios_by_column(pq_file:str):
 
     temp_ = NamedTemporaryFile(suffix='.html', delete=False)
 
-    from pyecharts.globals import ThemeType
-
     _ = (
         HeatMap(init_opts=opts.InitOpts(theme=ThemeType.DARK))
         .add_xaxis([rg for rg in range(0, pf.metadata.num_row_groups)])
@@ -341,17 +335,15 @@ def ratios_by_column(pq_file:str):
         .render(temp_.name)
     )
 
+    # WIP:
+    # * No label at the top
+    # * No slider in bottom left
+    # * sort y axis
+    # * make y axis wider to support long labels
+    # * Use nice colour gradient from QGIS maps
+    # * Make taller, not all fields can be seen (where is geometry?)
     print(open(temp_.name, 'r').read())
     unlink(temp_.name)
-    '''
-    WIP:
-    * No label at the top
-    * No slider in bottom left
-    * sort y axis
-    * make y axis wider to support long labels
-    * Use nice colour gradient from QGIS maps
-    * Make taller, not all fields can be seen (where is geometry?)
-    '''
 
 
 if __name__ == "__main__":
