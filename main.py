@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+# pylint: disable=C0116 C0209 R0916 R0912 R0915 R0914 C0201 R1732 W1514
+
+"""Analyse the file structure of Parquet files"""
+
 from collections import Counter
 from functools   import reduce
 from glob        import glob
