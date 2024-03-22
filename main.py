@@ -5,14 +5,14 @@
 
 """Analyse the file structure of Parquet files"""
 
-from collections import Counter
-from functools   import reduce
-from operator    import add, itemgetter
-from os          import unlink
-from tempfile    import NamedTemporaryFile
+from   collections       import Counter
+from   functools         import reduce
+from   operator          import add, itemgetter
+from   os                import unlink
+from   tempfile          import NamedTemporaryFile
 
 import altair            as alt
-from altair_saver        import save
+from   altair_saver      import save
 import humanize
 import pandas            as pd
 import pyarrow.parquet   as pq
