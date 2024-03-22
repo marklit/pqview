@@ -276,26 +276,6 @@ def minmax(pq_file:str, column:str):
 def ratios_by_column(pq_file:str):
     '''
     Compression ratios of each column by row-group
-
-    Chart types:
-
-    * Sunburst with break up by column dots (bbox would have 4 children)
-
-        1.2 GB geometry
-      189.8 MB id
-      121.4 MB bbox.maxy
-      121.3 MB bbox.miny
-      119.7 MB bbox.maxx
-      119.6 MB bbox.minx
-       82.6 MB sources.list.element.recordId
-       10.7 MB updateTime
-        2.9 MB height
-        2.6 MB sources.list.element.confidence
-        2.1 MB names.common.list.element.value
-        1.1 MB sources.list.element.dataset
-      584.1 kB class
-
-    * Sunburst of space usage by column type with children being column names
     '''
     pf = pq.ParquetFile(pq_file)
 
