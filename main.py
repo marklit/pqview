@@ -17,8 +17,7 @@ import humanize
 import pandas            as pd
 import pyarrow.parquet   as pq
 from   pyecharts         import options as opts
-from   pyecharts.charts  import HeatMap, Sunburst
-from   pyecharts.globals import ThemeType
+from   pyecharts.charts  import Sunburst
 from   tabulate          import tabulate
 import typer
 

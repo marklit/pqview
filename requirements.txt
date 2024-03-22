@@ -1,4 +1,5 @@
 altair
+altair_saver
 duckdb
 geojson
 h3
