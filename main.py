@@ -11,8 +11,11 @@ from operator    import add, itemgetter
 from os          import unlink
 from tempfile    import NamedTemporaryFile
 
+import altair            as alt
+from altair_saver        import save
 import humanize
-import pyarrow.parquet as pq
+import pandas            as pd
+import pyarrow.parquet   as pq
 from   pyecharts         import options as opts
 from   pyecharts.charts  import HeatMap, Sunburst
 from   pyecharts.globals import ThemeType
@@ -299,49 +302,40 @@ def ratios_by_column(pq_file:str):
 
     cols = [col.path for col in pf.schema]
 
-    # WIP: build method that has function passed into it that will be called
-    # with column. That way you can use most of this code to produce a heatmap
-    # of unique values
-    values = [[rg,
-              cols[col],
-              pf.metadata.row_group(rg).column(col).total_compressed_size /
-              pf.metadata.row_group(rg).column(col).total_uncompressed_size]
-             for rg in range(0, pf.metadata.num_row_groups)
-             for col in range(0, pf.metadata.num_columns)]
+    # WIP: https://altair-viz.github.io/gallery/lasagna_plot.html
+    values = pd.DataFrame([
+        {'rowgroup': rg,
+         'column': cols[col],
+         'efficiency':
+            pf.metadata.row_group(rg).column(col).total_compressed_size /
+            pf.metadata.row_group(rg).column(col).total_uncompressed_size}
+       for rg in range(0, pf.metadata.num_row_groups)
+       for col in range(0, pf.metadata.num_columns)])
 
-    min_val = min([x for _, _, x in values]) # pylint: disable=R1728
-    max_val = max([x for _, _, x in values]) # pylint: disable=R1728
-
-    values = [[rg, col, 100 - (100 * ((val - min_val)/(max_val - min_val)))]
-              for rg, col, val in values]
-
-    temp_ = NamedTemporaryFile(suffix='.html', delete=False)
-
-    _ = (
-        HeatMap(init_opts=opts.InitOpts(theme=ThemeType.DARK))
-        .add_xaxis([rg for rg in range(0, pf.metadata.num_row_groups)]) # pylint: disable=R1721
-        .add_yaxis(
-            "Compression Ratio Ranking (100 best, 0 worst)",
-            cols,
-            values,
-            label_opts=opts.LabelOpts(is_show=False, padding=100),
-        )
-        .set_global_opts(
-            legend_opts=opts.LegendOpts(is_show=False),
-            title_opts=opts.TitleOpts(title="Compression Ratio HeatMap"),
-            visualmap_opts=opts.VisualMapOpts(pos_right='0%', pos_top='0%'),
-        )
-        .set_dark_mode()
-        .render(temp_.name)
+    color_condition = alt.condition(
+        "datum.rowgroup == 1 && datum.rowgroup == 1",
+        alt.value("black"),
+        alt.value(None),
     )
 
-    # WIP:
-    # * No label at the top
-    # * No slider in bottom left
-    # * sort y axis
-    # * make y axis wider to support long labels
-    # * Use nice colour gradient from QGIS maps
-    # * Make taller, not all fields can be seen (where is geometry?)
+    alt.renderers.set_embed_options(theme='dark')
+
+    chart = alt.Chart(values, width=800, height=800).mark_rect().encode(
+        alt.X("rowgroup:N")
+            .title("Row-group")
+            .axis(
+                #format="%d",
+                labelAngle=0,
+                labelOverlap=False,
+                labelColor=color_condition,
+                tickColor=color_condition,
+            ),
+        alt.Y("column:N").title('Column Name'),
+        alt.Color("efficiency").title("Efficiency")
+    )
+
+    temp_ = NamedTemporaryFile(suffix='.html', delete=False)
+    save(chart, temp_.name)
     print(open(temp_.name, 'r').read())
     unlink(temp_.name)
 

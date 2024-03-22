@@ -294,13 +294,11 @@ $ python3 ~/pqview/main.py \
 
 ```bash
 $ python3 ~/pqview/main.py \
-    ratios-by-column tokyo.pq \
+    ratios-by-column test.pq \
     > compression_ratio_heatmap.html
 ```
 
 ![Compression Ratio HeatMap](compression_ratio_heatmap.png)
-
-The blue values were compressed the most while the red areas were compressed the least. The labelling and colour schema is a work in progress.
 
 ### Minimum & Maximum Values
 
