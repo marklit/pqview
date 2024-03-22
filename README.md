@@ -226,7 +226,7 @@ As HTML:
 
 ```bash
 $ python3 ~/pqview/main.py \
-    types --html tokyo.pq \
+    types --html test.pq \
     > sunburst_by_type.html
 ```
 
