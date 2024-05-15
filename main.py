@@ -89,7 +89,7 @@ def sizes(pq_file:str):
                      for col in range(0, pf.metadata.num_columns)
                      for rg in range(0, pf.metadata.num_row_groups)])))
 
-    sizes_ = dict(sorted(sizes.items(), key=lambda x: x[1], reverse=True))
+    sizes_ = dict(sorted(sizes_.items(), key=lambda x: x[1], reverse=True))
 
     for field, num_bytes in sizes_.items():
         print('%10s %s' % (humanize.naturalsize(num_bytes), field))
