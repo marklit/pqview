@@ -4,6 +4,7 @@ duckdb
 geojson
 h3
 humanize
+pandas
 pyarrow
 pyecharts
 rich
